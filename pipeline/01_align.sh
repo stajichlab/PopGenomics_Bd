@@ -7,10 +7,7 @@ module load gatk/4
 module load java/13
 
 MEM=32g
-
-mkdir -p $ALNFOLDER
-mkdir -p $TOPOUTDIR
-
+TOPOUTDIR=tmp
 if [ -f config.txt ]; then
   source config.txt
 fi
@@ -22,7 +19,7 @@ fi
 if [ ! -f $REFGENOME.dict ]; then
   echo "NEED a $REFGENOME.dict - make sure 00_index.sh is run"
 fi
-mkdir -p $TOPOUTDIR
+mkdir -p $TOPOUTDIR $ALNFOLDER
 
 CPU=2
 if [ $SLURM_CPUS_ON_NODE ]; then
@@ -49,8 +46,8 @@ do
 
   # BEGIN THIS PART IS PROBABLY PROJECT SPECIFIC
   # THIS COULD NEED TO BE CHANGED TO R1 R2 or R1_001 and R2_001 etc
-  PAIR1=$INDIR/${FILEBASE}_1.$FASTQEXT
-  PAIR2=$INDIR/${FILEBASE}_2.$FASTQEXT
+  PAIR1=$FASTQFOLDER/${FILEBASE}_1.$FASTQEXT
+  PAIR2=$FASTQFOLDER/${FILEBASE}_2.$FASTQEXT
   PREFIX=$STRAIN
   # END THIS PART IS PROBABLY PROJECT SPECIFIC
   echo "STRAIN is $STRAIN $PAIR1 $PAIR2"
