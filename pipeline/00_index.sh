@@ -5,10 +5,11 @@ module load picard
 if [ -f config.txt ]; then
 	source config.txt
 fi
+mkdir genome
 pushd genome
 # THIS IS EXAMPLE CODE FOR HOW TO DOWNLOAD DIRECT FROM FUNGIDB
-RELEASE=39
-SPECIES=AfumigatusAf293
+RELEASE=49
+SPECIES=BdendrobatidisJEL423
 URL=https://fungidb.org/common/downloads/release-${RELEASE}/$SPECIES
 PREF=FungiDB-${RELEASE}_${SPECIES}
 FASTAFILE=${PREF}_Genome.fasta
