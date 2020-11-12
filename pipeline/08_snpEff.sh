@@ -5,9 +5,9 @@ module load miniconda3
 module load snpEff
 module load bcftools/1.11
 module load tabix
-# THIS IS AN EXAMPLE OF HOW TO MAKE SNPEFF - it is for A.fumigatus 
-SNPEFFGENOME=AfumigatusAf293_FungiDB_39
-GFFGENOME=FungiDB-39_AfumigatusAf293.gff
+# THIS IS AN EXAMPLE OF HOW TO MAKE SNPEFF - i
+SNPEFFGENOME=FungiDB-49_BdendrobatidisJEL423
+GFFGENOME=$SNPEFFGENOME.gff
 
 MEM=64g
 
@@ -36,13 +36,11 @@ mkdir -p $SNPEFFOUT
 ## NOTE YOU WILL NEED TO FIX THIS FOR YOUR CUSTOM GENOME
 if [ ! -e $SNPEFFOUT/$snpEffConfig ]; then
 	rsync -a $SNPEFFDIR/snpEff.config $SNPEFFOUT/$snpEffConfig
-	echo "# AfumAf293.fungidb " >> $SNPEFFOUT/$snpEffConfig
-	# CHANGE Aspergillus fumigatus Af293 FungiDB to your genome name and source - though this is really not important - $SNPEFFGENOME.genome is really what is used
-  	echo "$SNPEFFGENOME.genome : Aspergillus fumigatus Af293 FungiDB" >> $SNPEFFOUT/$snpEffConfig
-	chroms=$(grep '##sequence-region' $GFFGENOMEFILE | awk '{print $2}' | perl -p -e 's/\n/, /' | perl -p -e 's/,\s+$/\n/')
+	echo "# BdJEL423.fungidb " >> $SNPEFFOUT/$snpEffConfig
+  	echo "$SNPEFFGENOME.genome : Batrachochytrium dendrobatidis JEL423 FungiDB" >> $SNPEFFOUT/$snpEffConfig
+	chroms=$(grep '##sequence-region' $GFFGENOMEFILE | awk '{print $2}' | grep -v mito | perl -p -e 's/\n/, /' | perl -p -e 's/,\s+$/\n/')
 	echo -e "\t$SNPEFFGENOME.chromosomes: $chroms" >> $SNPEFFOUT/$snpEffConfig
-	# THIS WOULD NEED SPEIFIC FIX BY USER - IN A.fumigatus the MT contig is called mito_A_fumigatus_Af293
-	echo -e "\t$SNPEFFGENOME.mito_A_fumigatus_Af293.codonTable : Mold_Mitochondrial" >> $SNPEFFOUT/$snpEffConfig
+	echo -e "\t$SNPEFFGENOME.BdenJEL423_mito.codonTable : Mold_Mitochondrial" >> $SNPEFFOUT/$snpEffConfig
 	mkdir -p $SNPEFFOUT/data/$SNPEFFGENOME
 	gzip -c $GFFGENOMEFILE > $SNPEFFOUT/data/$SNPEFFGENOME/genes.gff.gz
 	rsync -aL $REFGENOME $SNPEFFOUT/data/$SNPEFFGENOME/sequences.fa
@@ -74,7 +72,7 @@ bcftools query -H -f '%CHROM\t%POS\t%REF\t%ALT{0}[\t%TGT]\t%INFO/ANN\n' $OUTVCF 
 
 # this requires python3 and vcf script
 # this assumes the interpro domains were downloaded from FungiDB and their format - you will need to generalize this
-../scripts/map_snpEff2domains.py --vcf $OUTVCF --domains ../genome/FungiDB-39_AfumigatusAf293_InterproDomains.txt --output $DOMAINVAR
+../scripts/map_snpEff2domains.py --vcf $OUTVCF --domains ../genome/${SNPEFFGENOME}_InterproDomains.txt --output $DOMAINVAR
 
 # this requires Python and the vcf library to be installed
 ../scripts/snpEff_2_tab.py $OUTVCF > $OUTMATRIX
