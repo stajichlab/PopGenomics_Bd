@@ -25,4 +25,5 @@ SLICEVCF=vcf_slice
 SNPEFFOUT=snpEff
 snpEffConfig=snpEff.config
 SNPEFFGENOME=Bd_FungiDB
-GFFGENOME=FungiDB-49_BdendrobatidisJEL423.gff  
+GFFGENOME=FungiDB-49_BdendrobatidisJEL423.gff
+POPYAML=population_sets.yaml
