@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-#SBATCH -p intel -N 1 -n 16 --mem 32gb --out logs/make_gvcf.%a.log --time 48:00:00
+#SBATCH -p intel -N 1 -n 6 --mem 32gb --out logs/make_gvcf.%a.log --time 48:00:00
 
 module load picard
 module load java/13
@@ -7,7 +7,7 @@ module load gatk/4
 module load bcftools
 
 MEM=32g
-SAMPFILE=samples.csv
+SAMPFILE=(samples.csv samples_single.csv)
 
 if [ -f config.txt ]; then
     source config.txt
@@ -37,7 +37,7 @@ fi
 hostname
 date
 IFS=,
-tail -n +2 $SAMPFILE | sed -n ${N}p | while read STRAIN SAMPID
+grep -h -v -P '^(Strain,|Isolate,)' "${SAMPFILE[@]}" | sed -n ${N}p | while read STRAIN SAMPID REST
 do
   # BEGIN THIS PART IS PROJECT SPECIFIC LIKELY
   # END THIS PART IS PROJECT SPECIFIC LIKELY

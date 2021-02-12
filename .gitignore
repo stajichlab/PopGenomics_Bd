@@ -3,3 +3,5 @@
 .#*
 *.bwt
 *.sa
+logs/*.log
+logs/*.metrics
