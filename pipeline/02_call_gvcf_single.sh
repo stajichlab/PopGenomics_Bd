@@ -1,8 +1,7 @@
-#!/usr/bin/bash
-#SBATCH -p intel -N 1 -n 16 --mem 32gb --out logs/make_gvcf_single.%a.log --time 48:00:00
+#!/usr/bin/bash -l
+#SBATCH -p short -N 1 -n 16 --mem 32gb --out logs/make_gvcf_single.%a.log
 
 module load picard
-module load java/13
 module load gatk/4
 module load bcftools
 
@@ -50,7 +49,7 @@ do
   fi
   if [[ ! -f $GVCF || $ALNFILE -nt $GVCF ]]; then
       time gatk --java-options -Xmx${MEM} HaplotypeCaller \
-   	  --emit-ref-confidence GVCF --sample-ploidy 1 \
+   	  --emit-ref-confidence GVCF --sample-ploidy 2 \
    	  --input $ALNFILE --reference $REFGENOME \
    	  --output $GVCF --native-pair-hmm-threads $CPU \
 	     -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation

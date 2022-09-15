@@ -1,8 +1,9 @@
-#!/usr/bin/bash
+#!/usr/bin/bash -l
 #SBATCH -p intel --mem 64gb -N 1 -n 4 --out logs/concat_vcf.log -p short
 
 module load bcftools
 module load yq
+module load cyvcf2
 
 CPU=1
 if [ $SLURM_CPUS_ON_NODE ]; then
@@ -34,7 +35,14 @@ do
   for TYPE in SNP INDEL
   do
      OUT=$FINALVCF/$PREFIX.$POPNAME.$TYPE.combined_selected.vcf.gz
-     bcftools concat -Oz -o $OUT --threads $CPU $IN/$POPNAME/*.$TYPE.selected.vcf.gz
-     tabix $OUT
+     QC=$FINALVCF/$PREFIX.$POPNAME.$TYPE.combined_selected.QC.txt
+     if [ ! -s $OUT ];  then
+     	bcftools concat -Oz -o $OUT --threads $CPU $IN/$POPNAME/${PREFIX}.*.${TYPE}.selected.vcf.gz
+     	tabix $OUT
+     fi
+     if [[ ! -s $QC || $OUT -nt $QC ]]; then
+     	./scripts/vcf_QC_report.py --vcf $OUT -o $FINALVCF/$PREFIX.$POPNAME.$TYPE.combined_selected.QC.txt
+     fi
+
    done
  done
