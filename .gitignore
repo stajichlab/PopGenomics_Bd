@@ -5,3 +5,4 @@
 *.sa
 logs/*.log
 logs/*.metrics
+.Rproj.user
